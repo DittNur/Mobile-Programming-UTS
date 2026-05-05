@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_uts2/pertemuan/pertemuan4.dart';
 
 class CheckboxPage extends StatefulWidget {
   @override
@@ -14,6 +15,7 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
   
   // Checkbox states
   bool _isCheckedSyarat = false;
+  bool _selectAllHobbies = false; // Tambahan state untuk "Pilih Semua"
   String _errorText = '';
   
   // Hobby checkboxes
@@ -31,26 +33,63 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
   String _kelasError = '';
   String _hobbyError = '';
 
+  // Fungsi untuk fitur "Pilih Semua"
+  void _toggleSelectAll(bool? value) {
+    setState(() {
+      _selectAllHobbies = value ?? false;
+      // Mengubah semua nilai hobi mengikuti status "Pilih Semua"
+      _hobbies.updateAll((key, val) => _selectAllHobbies);
+      
+      if (_selectAllHobbies) {
+        _hobbyError = '';
+      }
+    });
+  }
+
+  // Cek apakah semua hobi tercentang manual untuk update status "Pilih Semua"
+  void _checkIfAllSelected() {
+    bool allSelected = true;
+    _hobbies.forEach((key, value) {
+      if (!value) {
+        allSelected = false;
+      }
+    });
+    setState(() {
+      _selectAllHobbies = allSelected;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
-          backgroundColor: Colors.lightGreenAccent,
+          // Menggunakan Gradient agar terlihat lebih modern
+          flexibleSpace: Container(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Colors.lightGreenAccent.shade400, Colors.green.shade500],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
+            ),
+          ),
           title: Text(
-            'Form dengan Checkbox',
+            'Form Registrasi (Checkbox)',
             style: TextStyle(
               fontWeight: FontWeight.bold,
               letterSpacing: 1,
+              color: Colors.white,
             ),
           ),
+          backgroundColor: Colors.transparent,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.vertical(
-              bottom: Radius.circular(24),
-            ),
+            borderRadius: BorderRadius.vertical(bottom: Radius.circular(24)),
           ),
-          elevation: 0,
+          elevation: 4,
           centerTitle: true,
+          iconTheme: IconThemeData(color: Colors.white),
         ),
         body: SingleChildScrollView(
           child: Container(
@@ -60,7 +99,8 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
               children: [
                 // Form Section
                 Card(
-                  elevation: 8,
+                  elevation: 6,
+                  shadowColor: Colors.black26,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -70,105 +110,37 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         // Section Title
-                        Row(
-                          children: [
-                            Container(
-                              width: 4,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                color: Colors.blue,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              'Data Diri',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey.shade800,
-                              ),
-                            ),
-                          ],
-                        ),
-                        
+                        _buildSectionHeader('Data Mahasiswa', Colors.blue),
                         SizedBox(height: 20),
                         
                         // Field Nama
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.grey.shade50,
-                          ),
-                          child: TextField(
-                            controller: _namaController,
-                            decoration: InputDecoration(
-                              labelText: 'Nama Lengkap',
-                              hintText: 'Masukkan nama lengkap Anda',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              errorText: _namaError.isNotEmpty ? _namaError : null,
-                              prefixIcon: Icon(Icons.person_outline, color: Colors.blue.shade600),
-                              labelStyle: TextStyle(color: Colors.grey.shade700),
-                            ),
-                          ),
+                        _buildCustomTextField(
+                          controller: _namaController,
+                          label: 'Nama Lengkap',
+                          hint: 'Masukkan nama lengkap',
+                          icon: Icons.person_outline,
+                          errorMsg: _namaError,
                         ),
-                        
                         SizedBox(height: 16),
                         
                         // Field NIM
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.grey.shade50,
-                          ),
-                          child: TextField(
-                            controller: _nimController,
-                            decoration: InputDecoration(
-                              labelText: 'NIM',
-                              hintText: 'Masukkan NIM Anda',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              errorText: _nimError.isNotEmpty ? _nimError : null,
-                              prefixIcon: Icon(Icons.numbers, color: Colors.blue.shade600),
-                              labelStyle: TextStyle(color: Colors.grey.shade700),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
+                        _buildCustomTextField(
+                          controller: _nimController,
+                          label: 'NIM',
+                          hint: 'Masukkan NIM Anda',
+                          icon: Icons.numbers,
+                          errorMsg: _nimError,
+                          isNumber: true,
                         ),
-                        
                         SizedBox(height: 16),
                         
                         // Field Kelas
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            color: Colors.grey.shade50,
-                          ),
-                          child: TextField(
-                            controller: _kelasController,
-                            decoration: InputDecoration(
-                              labelText: 'Kelas',
-                              hintText: 'Contoh: 01SIFP001',
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
-                              ),
-                              filled: true,
-                              fillColor: Colors.white,
-                              errorText: _kelasError.isNotEmpty ? _kelasError : null,
-                              prefixIcon: Icon(Icons.class_, color: Colors.blue.shade600),
-                              labelStyle: TextStyle(color: Colors.grey.shade700),
-                            ),
-                          ),
+                        _buildCustomTextField(
+                          controller: _kelasController,
+                          label: 'Kelas',
+                          hint: 'Contoh: 01SIFP001',
+                          icon: Icons.class_,
+                          errorMsg: _kelasError,
                         ),
                       ],
                     ),
@@ -179,7 +151,8 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                 
                 // Hobi Section
                 Card(
-                  elevation: 8,
+                  elevation: 6,
+                  shadowColor: Colors.black26,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20),
                   ),
@@ -188,38 +161,25 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Container(
-                              width: 4,
-                              height: 24,
-                              decoration: BoxDecoration(
-                                color: Colors.orange.shade600,
-                                borderRadius: BorderRadius.circular(2),
-                              ),
-                            ),
-                            SizedBox(width: 12),
-                            Text(
-                              'Hobi',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                color: Colors.grey.shade800,
-                              ),
-                            ),
-                            SizedBox(width: 8),
-                            Text(
-                              '(Pilih minimal 1)',
-                              style: TextStyle(
-                                fontSize: 12,
-                                color: Colors.grey.shade500,
-                              ),
-                            ),
-                          ],
+                        _buildSectionHeader('Minat & Hobi', Colors.orange.shade600, subtext: '(Pilih minimal 1)'),
+                        SizedBox(height: 10),
+                        
+                        // Checkbox "Pilih Semua" (Master)
+                        CheckboxListTile(
+                          title: Text(
+                            "Pilih Semua", 
+                            style: TextStyle(fontWeight: FontWeight.bold, color: Colors.orange.shade800)
+                          ),
+                          value: _selectAllHobbies,
+                          onChanged: _toggleSelectAll,
+                          activeColor: Colors.orange.shade800,
+                          controlAffinity: ListTileControlAffinity.leading,
+                          contentPadding: EdgeInsets.zero,
+                          dense: true,
                         ),
-                        
-                        SizedBox(height: 16),
-                        
+                        Divider(height: 1, thickness: 1, color: Colors.grey.shade300),
+                        SizedBox(height: 10),
+
                         Container(
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(16),
@@ -229,20 +189,19 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                             shrinkWrap: true,
                             crossAxisCount: 2,
                             physics: NeverScrollableScrollPhysics(),
-                            childAspectRatio: 3,
+                            childAspectRatio: 3.5, // Disesuaikan agar teks tidak terpotong
                             children: _hobbies.keys.map((hobby) {
                               return CheckboxListTile(
                                 title: Text(
                                   hobby,
-                                  style: TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
+                                  style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500),
                                 ),
                                 value: _hobbies[hobby],
                                 onChanged: (bool? value) {
                                   setState(() {
                                     _hobbies[hobby] = value ?? false;
+                                    _checkIfAllSelected(); // Cek apakah perlu centang "Pilih Semua"
+                                    
                                     if (_hobbies.values.any((selected) => selected)) {
                                       _hobbyError = '';
                                     }
@@ -250,8 +209,8 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                                 },
                                 activeColor: Colors.orange.shade600,
                                 checkColor: Colors.white,
-                                contentPadding: EdgeInsets.symmetric(horizontal: 8),
-                                dense: false,
+                                contentPadding: EdgeInsets.symmetric(horizontal: 0),
+                                dense: true,
                                 controlAffinity: ListTileControlAffinity.leading,
                               );
                             }).toList(),
@@ -260,15 +219,12 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                         
                         if (_hobbyError.isNotEmpty)
                           Padding(
-                            padding: EdgeInsets.only(left: 16, top: 8),
+                            padding: EdgeInsets.only(top: 10),
                             child: Row(
                               children: [
                                 Icon(Icons.warning, size: 16, color: Colors.red),
                                 SizedBox(width: 4),
-                                Text(
-                                  _hobbyError,
-                                  style: TextStyle(color: Colors.red, fontSize: 12),
-                                ),
+                                Text(_hobbyError, style: TextStyle(color: Colors.red, fontSize: 12)),
                               ],
                             ),
                           ),
@@ -291,11 +247,8 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                       children: [
                         CheckboxListTile(
                           title: Text(
-                            'Saya menyetujui syarat dan ketentuan yang berlaku',
-                            style: TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                            ),
+                            'Saya menyetujui syarat dan ketentuan yang berlaku dalam sistem akademik.',
+                            style: TextStyle(fontSize: 13, fontWeight: FontWeight.w500),
                           ),
                           value: _isCheckedSyarat,
                           onChanged: (bool? value) {
@@ -313,15 +266,12 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                         ),
                         if (_errorText.isNotEmpty)
                           Padding(
-                            padding: EdgeInsets.only(left: 16, bottom: 8),
+                            padding: EdgeInsets.only(left: 48, bottom: 8), // Sejajar dengan teks atas
                             child: Row(
                               children: [
-                                Icon(Icons.warning, size: 16, color: Colors.red),
+                                Icon(Icons.error_outline, size: 14, color: Colors.red),
                                 SizedBox(width: 4),
-                                Text(
-                                  _errorText,
-                                  style: TextStyle(color: Colors.red, fontSize: 12),
-                                ),
+                                Text(_errorText, style: TextStyle(color: Colors.red, fontSize: 12)),
                               ],
                             ),
                           ),
@@ -335,32 +285,23 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                 // Submit Button
                 Container(
                   width: double.infinity,
+                  height: 55, // Tinggi tombol dibuat tetap agar kokoh
                   child: ElevatedButton(
-                    onPressed: () {
-                      _validateAndSubmit(context);
-                    },
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 14),
-                      child: Text(
-                        'DAFTAR SEKARANG',
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          letterSpacing: 1.5,
-                        ),
-                      ),
+                    onPressed: () => _validateAndSubmit(context),
+                    child: Text(
+                      'DAFTAR SEKARANG',
+                      style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold, letterSpacing: 1.5),
                     ),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.blue.shade700,
                       foregroundColor: Colors.white,
                       shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
+                        borderRadius: BorderRadius.circular(15),
                       ),
                       elevation: 4,
                     ),
                   ),
                 ),
-                
                 SizedBox(height: 16),
               ],
             ),
@@ -369,6 +310,73 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
       );
   }
   
+  // Helper Widget untuk Header Section agar kode lebih bersih
+  Widget _buildSectionHeader(String title, Color color, {String? subtext}) {
+    return Row(
+      children: [
+        Container(
+          width: 5,
+          height: 24,
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: BorderRadius.circular(5),
+          ),
+        ),
+        SizedBox(width: 12),
+        Text(
+          title,
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.grey.shade800),
+        ),
+        if (subtext != null) ...[
+          SizedBox(width: 8),
+          Text(subtext, style: TextStyle(fontSize: 12, color: Colors.grey.shade500)),
+        ]
+      ],
+    );
+  }
+
+  // Helper Widget untuk TextField dengan validasi visual bawaan
+  Widget _buildCustomTextField({
+    required TextEditingController controller,
+    required String label,
+    required String hint,
+    required IconData icon,
+    required String errorMsg,
+    bool isNumber = false,
+  }) {
+    return TextField(
+      controller: controller,
+      keyboardType: isNumber ? TextInputType.number : TextInputType.text,
+      decoration: InputDecoration(
+        labelText: label,
+        hintText: hint,
+        filled: true,
+        fillColor: Colors.grey.shade50,
+        errorText: errorMsg.isNotEmpty ? errorMsg : null,
+        prefixIcon: Icon(icon, color: Colors.blue.shade600),
+        labelStyle: TextStyle(color: Colors.grey.shade700),
+        // Desain border saat normal
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        enabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.grey.shade300),
+        ),
+        // Desain border saat error (garis merah)
+        errorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.red.shade400, width: 1.5),
+        ),
+        focusedErrorBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide(color: Colors.red.shade600, width: 2),
+        ),
+      ),
+    );
+  }
+
   void _validateAndSubmit(BuildContext context) {
     setState(() {
       // Reset errors
@@ -378,52 +386,54 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
       _hobbyError = '';
       _errorText = '';
       
-      // Validate Nama
+      // Validasi dengan if-else
       if (_namaController.text.trim().isEmpty) {
         _namaError = 'Nama tidak boleh kosong';
       }
       
-      // Validate NIM
       if (_nimController.text.trim().isEmpty) {
         _nimError = 'NIM tidak boleh kosong';
       } else if (_nimController.text.trim().length < 8) {
         _nimError = 'NIM minimal 8 karakter';
       }
       
-      // Validate Kelas
       if (_kelasController.text.trim().isEmpty) {
         _kelasError = 'Kelas tidak boleh kosong';
       }
       
-      // Validate Hobby (minimal 1 dipilih)
       if (!_hobbies.values.any((selected) => selected)) {
         _hobbyError = 'Pilih minimal 1 hobi';
       }
       
-      // Validate Terms
       if (!_isCheckedSyarat) {
         _errorText = 'Anda harus menyetujui syarat dan ketentuan';
       }
       
-      // If all validations pass
+      // Jika semua validasi lulus
       if (_namaError.isEmpty && 
           _nimError.isEmpty && 
           _kelasError.isEmpty && 
           _hobbyError.isEmpty && 
           _isCheckedSyarat) {
         
-        // Get selected hobbies
         List<String> selectedHobbies = _hobbies.keys
             .where((hobby) => _hobbies[hobby] == true)
             .toList();
+
+        GlobalData.nama = _namaController.text;
+        GlobalData.nim = _nimController.text;
+        GlobalData.kelas = _kelasController.text;
+        GlobalData.hobi = selectedHobbies.join(', ');
         
-        // Show success dialog
+        // Mendapatkan waktu saat ini
+        String waktuDaftar = "${DateTime.now().hour}:${DateTime.now().minute.toString().padLeft(2, '0')}";
+        
+        // Tampilkan success dialog
         showDialog(
           context: context,
+          barrierDismissible: false, // Tidak bisa ditutup dengan tap di luar
           builder: (context) => Dialog(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(20),
-            ),
+            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             child: Container(
               padding: EdgeInsets.all(24),
               child: Column(
@@ -431,41 +441,30 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                 children: [
                   Container(
                     padding: EdgeInsets.all(16),
-                    decoration: BoxDecoration(
-                      color: Colors.green.shade50,
-                      shape: BoxShape.circle,
-                    ),
-                    child: Icon(
-                      Icons.check_circle,
-                      size: 64,
-                      color: Colors.green.shade600,
-                    ),
+                    decoration: BoxDecoration(color: Colors.green.shade50, shape: BoxShape.circle),
+                    child: Icon(Icons.check_circle, size: 64, color: Colors.green.shade600),
                   ),
                   SizedBox(height: 20),
                   Text(
                     'Pendaftaran Berhasil!',
-                    style: TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.green.shade700,
-                    ),
+                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold, color: Colors.green.shade700),
                   ),
+                  SizedBox(height: 5),
+                  Text("Tercatat pada jam $waktuDaftar", style: TextStyle(color: Colors.grey)),
                   SizedBox(height: 16),
                   Divider(),
                   SizedBox(height: 16),
-                  Container(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildInfoRow(Icons.person, 'Nama', _namaController.text),
-                        SizedBox(height: 12),
-                        _buildInfoRow(Icons.numbers, 'NIM', _nimController.text),
-                        SizedBox(height: 12),
-                        _buildInfoRow(Icons.class_, 'Kelas', _kelasController.text),
-                        SizedBox(height: 12),
-                        _buildInfoRow(Icons.favorite, 'Hobi', selectedHobbies.join(', ')),
-                      ],
-                    ),
+                  Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      _buildInfoRow(Icons.person, 'Nama', _namaController.text),
+                      SizedBox(height: 12),
+                      _buildInfoRow(Icons.numbers, 'NIM', _nimController.text),
+                      SizedBox(height: 12),
+                      _buildInfoRow(Icons.class_, 'Kelas', _kelasController.text),
+                      SizedBox(height: 12),
+                      _buildInfoRow(Icons.favorite, 'Hobi', selectedHobbies.join(', ')),
+                    ],
                   ),
                   SizedBox(height: 24),
                   ElevatedButton(
@@ -474,15 +473,17 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                       _resetForm();
                       Fluttertoast.showToast(
                         msg: 'Pendaftaran Berhasil Disimpan!!',
-                        gravity: ToastGravity.TOP);
+                        gravity: ToastGravity.TOP,
+                        backgroundColor: Colors.green,
+                        textColor: Colors.white,
+                      );
                     },
-                    child: Text('OK', style: TextStyle(fontSize: 16, color: Colors.white)),
+                    child: Text('TUTUP', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
                     style: ElevatedButton.styleFrom(
                       minimumSize: Size(double.infinity, 45),
                       backgroundColor: Colors.blue.shade700,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
+                      foregroundColor: Colors.white,
+                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
                 ],
@@ -500,25 +501,15 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
       children: [
         Icon(icon, size: 20, color: Colors.blue.shade600),
         SizedBox(width: 12),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              label,
-              style: TextStyle(
-                fontSize: 12,
-                color: Colors.grey.shade600,
-              ),
-            ),
-            SizedBox(height: 2),
-            Text(
-              value,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ],
+        Expanded( // Mencegah overflow jika teks terlalu panjang
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(label, style: TextStyle(fontSize: 12, color: Colors.grey.shade600)),
+              SizedBox(height: 2),
+              Text(value, style: TextStyle(fontSize: 14, fontWeight: FontWeight.w500)),
+            ],
+          ),
         ),
       ],
     );
@@ -529,6 +520,7 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
       _namaController.clear();
       _nimController.clear();
       _kelasController.clear();
+      _selectAllHobbies = false;
       _hobbies.updateAll((key, value) => false);
       _isCheckedSyarat = false;
       _namaError = '';
