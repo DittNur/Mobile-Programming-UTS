@@ -6,6 +6,7 @@ import 'package:flutter_uts2/pertemuan/pertemuan4.dart';
 import 'package:flutter_uts2/pertemuan/pertemuan5.dart';
 import 'package:flutter_uts2/pertemuan/pertemuan6.dart';
 import 'package:flutter_uts2/pertemuan/pertemuan7.dart';
+import 'package:flutter_uts2/pertemuan/pertemuan8.dart';
 
 
 class DashboardPage extends StatelessWidget {
@@ -58,6 +59,13 @@ class DashboardPage extends StatelessWidget {
       "icon": Icons.auto_stories,
       "color": Colors.orange,
       "page": RadiobuttonPage(),
+    },
+    {
+      "title": "Pertemuan 8",
+      "subtitle": "Materi Auto Complete Dan Spinner",
+      "icon": Icons.auto_stories,
+      "color": Colors.blue,
+      "page": AutocompletespinPage(),
     },
   ];
 
