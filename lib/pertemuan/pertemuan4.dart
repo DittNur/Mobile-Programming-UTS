@@ -6,7 +6,6 @@ import 'package:simple_alert_dialog/simple_alert_dialog.dart';
 class GlobalData {
   static String summary = "";
   static String experience = "";
-  // Tambahkan variabel baru ini:
   static String nama = "";
   static String nim = "";
   static String kelas = "";

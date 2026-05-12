@@ -64,7 +64,6 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
     return Scaffold(
         backgroundColor: Colors.grey.shade100,
         appBar: AppBar(
-          // Menggunakan Gradient agar terlihat lebih modern
           flexibleSpace: Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -285,7 +284,7 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
                 // Submit Button
                 Container(
                   width: double.infinity,
-                  height: 55, // Tinggi tombol dibuat tetap agar kokoh
+                  height: 55, 
                   child: ElevatedButton(
                     onPressed: () => _validateAndSubmit(context),
                     child: Text(
@@ -310,7 +309,6 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
       );
   }
   
-  // Helper Widget untuk Header Section agar kode lebih bersih
   Widget _buildSectionHeader(String title, Color color, {String? subtext}) {
     return Row(
       children: [
@@ -335,7 +333,7 @@ class _FormCheckboxExampleState extends State<CheckboxPage> {
     );
   }
 
-  // Helper Widget untuk TextField dengan validasi visual bawaan
+
   Widget _buildCustomTextField({
     required TextEditingController controller,
     required String label,
